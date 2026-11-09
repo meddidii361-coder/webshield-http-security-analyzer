@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d18">
+  <title>WebShield — HTTP Security Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="/">
+      <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.8 27 7v8.1c0 7.2-4.7 11.7-11 14.1C9.7 26.8 5 22.3 5 15.1V7l11-4.2Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="m11.2 15.8 3.1 3.1 6.7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span><strong>WEB<span>SHIELD</span></strong><small>SECURITY ANALYZER</small></span>
+    </a>
+    <div class="side-label">WORKSPACE</div>
+    <button class="nav-item active" data-view="scanner"><span class="nav-icon">⌕</span> Scanner <span class="nav-dot"></span></button>
+    <button class="nav-item" data-view="history"><span class="nav-icon">◷</span> Scan history</button>
+    <div class="side-bottom">
+      <div class="status-card"><span class="pulse"></span><div><b>ENGINE ONLINE</b><small>HTTP header analysis</small></div></div>
+      <div class="side-foot">WEB SHIELD <span>v1.1.0</span><br><small>Local security workspace</small></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="breadcrumb">Workspace <span>/</span> <b id="crumb">Scanner</b></div>
+      <div class="top-actions"><span class="local-pill"><i></i> LOCAL INSTANCE</span><div class="avatar">WS</div></div>
+    </header>
+
+    <section class="view active" id="scanner-view">
+      <div class="page-heading">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span> WEB APPLICATION SECURITY</div><h1>HTTP Security <span>Analyzer</span></h1><p>Inspect HTTP response headers. Identify configuration gaps and get actionable hardening guidance.</p></div>
+        <div class="heading-chip"><span class="chip-icon">✳</span> PASSIVE ANALYSIS <span class="chip-sep">/</span> NO EXPLOITATION</div>
+      </div>
+
+      <section class="scan-panel">
+        <div class="panel-top"><div><span class="step-number">01</span><b> TARGET CONFIGURATION</b></div><span class="panel-note">ONE REQUEST · REDIRECTS FOLLOWED</span></div>
+        <form id="scan-form">
+          <label for="target-url">TARGET URL</label>
+          <div class="input-row">
+            <span class="input-prefix">↗</span>
+            <input id="target-url" name="url" type="url" placeholder="https://your-domain.com" autocomplete="url" required>
+            <div class="timeout-wrap"><label for="timeout">TIMEOUT</label><select id="timeout"><option value="10">10s</option><option value="15">15s</option><option value="30">30s</option><option value="60">60s</option></select></div>
+            <button class="scan-button" type="submit"><span>⌕</span> Scan website <b>→</b></button>
+          </div>
+          <div class="form-foot"><span>ⓘ Only scan websites you own or are explicitly authorized to assess.</span><span id="scan-state">READY TO SCAN</span></div>
+        </form>
+      </section>
+
+      <div class="loading-panel hidden" id="loading"><div class="loader"></div><div><b>Analyzing response headers</b><small>Sending one standard HTTP GET request and evaluating the response…</small></div></div>
+      <div class="error-panel hidden" id="error-box"></div>
+
+      <section id="empty-state" class="empty-state">
+        <div class="empty-graphic"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="core-shield">◇</div><span class="orbit-node node-a"></span><span class="orbit-node node-b"></span><span class="orbit-node node-c"></span></div>
+        <div class="eyebrow centered">AWAITING TARGET</div><h2>Your next security insight starts here.</h2><p>Enter a URL above to evaluate its HTTP security posture and generate a detailed report.</p>
+      </section>
+
+      <section id="results" class="hidden">
+        <div class="section-title"><div><span class="step-number">02</span><b> SECURITY OVERVIEW</b></div><span class="scan-meta" id="scan-meta"></span></div>
+        <div class="overview-grid">
+          <article class="score-card">
+            <div class="card-kicker">OVERALL SECURITY SCORE <span class="info-dot" title="Weighted score based on the configured header checks">i</span></div>
+            <div class="score-content"><div class="score-ring" id="score-ring"><div><strong id="score-value">--</strong><small>/ 100</small></div></div><div class="score-copy"><span class="rating-badge" id="rating">NOT RATED</span><h3 id="score-title">Awaiting scan</h3><p id="score-description">The result will appear here.</p></div></div>
+            <div class="score-foot"><span>HEADER CONFIGURATION SCORE</span><span id="score-grade">—</span></div>
+          </article>
+          <article class="stats-card">
+            <div class="card-kicker">CONTROL BREAKDOWN</div>
+            <div class="stat-row"><div class="stat-icon pass">✓</div><div><b id="pass-count">0</b><small>Passed checks</small></div><div class="stat-bar"><i id="pass-bar"></i></div></div>
+            <div class="stat-row"><div class="stat-icon warn">!</div><div><b id="warn-count">0</b><small>Warnings</small></div><div class="stat-bar"><i id="warn-bar"></i></div></div>
+            <div class="stat-row"><div class="stat-icon fail">×</div><div><b id="fail-count">0</b><small>Failed checks</small></div><div class="stat-bar"><i id="fail-bar"></i></div></div>
+            <div class="stats-foot"><span>HTTP STATUS</span><b id="http-status">—</b><span>TRANSPORT</span><b id="https-status">—</b></div>
+          </article>
+        </div>
+
+        <div class="section-title findings-title"><div><span class="step-number">03</span><b> HEADER INSPECTION</b></div><span class="panel-note">DETAILED FINDINGS & RECOMMENDATIONS</span></div>
+        <div class="findings-list" id="findings"></div>
+
+        <div class="report-bar"><div><div class="report-icon">⇩</div><div><b>Export scan report</b><small>Keep a copy of your findings for remediation and review.</small></div></div><div class="report-actions"><button id="download-txt" class="secondary-button">↓ TXT report</button><button id="download-json" class="secondary-button">{} JSON report</button><button id="print-report" class="primary-small">Print / PDF ↗</button></div></div>
+        <p class="disclaimer">LIMITATION: This tool performs a limited HTTP security-header configuration review. It does not test exploitability, inspect application logic, or replace a professional penetration test.</p>
+      </section>
+    </section>
+
+    <section class="view hidden" id="history-view">
+      <div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> ACTIVITY LOG</div><h1>Scan <span>History</span></h1><p>Review previous WebShield scans saved in this local workspace.</p></div></div>
+      <div class="history-panel"><div class="history-head"><b>RECENT SCANS</b><span>LAST 30 RECORDS</span></div><div id="history-list"><div class="history-empty">No scans saved yet. Run your first scan to populate this list.</div></div></div>
+    </section>
+    <footer class="footer"><span>© 2026 WEBSHIELD</span><span>BUILT FOR RESPONSIBLE SECURITY TESTING <i>◆</i></span></footer>
+  </main>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
